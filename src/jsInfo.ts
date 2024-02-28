@@ -10,3 +10,5 @@ export const getSum = (param: number) => {
 
     return number1 + number2 + param;
 }
+
+/*동작확인을 위한 주석*/
