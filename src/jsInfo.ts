@@ -12,3 +12,4 @@ export const getSum = (param: number) => {
 }
 
 /*동작확인을 위한 주석*/
+/*동작확인을 위한 주석2*/
