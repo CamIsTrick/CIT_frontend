@@ -1,6 +1,5 @@
 import { name, getName, getSum } from '../jsInfo';
 
-
 describe('jsInfo test', () => {
     it('name test', () => {
         expect(name).toBe('CIT');
