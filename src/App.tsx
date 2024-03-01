@@ -15,14 +15,13 @@ function App() {
 
   return (
     <>
-    
       <Main/>
       <div>PUSHTEST</div>
       <img src={myImage1} alt="My Image" />
       <img src={myImage2} alt="My Image" />
       {myImage3 && <img src={myImage3} alt="My Image" />}
       <button onClick={handleImageLoad}>Show myImage3</button>
-
+      {/* 깃 cicd test 입니다. */}
     </>
   );
 }
