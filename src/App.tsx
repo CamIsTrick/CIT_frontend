@@ -22,7 +22,7 @@ function App() {
       <img src={myImage1} alt="My Image" />
       <img src={myImage2} alt="My Image" />
       {myImage3 && <img src={myImage3} alt="My Image" />}
-      <button onClick={handleImageLoad}>Load Image 3</button>
+      <button onClick={handleImageLoad}>hello Image 3</button>
     </>
   );
 }
