@@ -3,7 +3,6 @@ import Main from './pages/Main/Main';
 import myImage1 from './assets/num1.png'; 
 import myImage2 from './assets/num2.png';
 
-
 function App() {
   
   const [myImage3, setMyImage3] = React.useState(null);
