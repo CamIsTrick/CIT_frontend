@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from "react";
 import styled from 'styled-components';
 import MainHeader from './components/MainHeader';
 import MainCamList from './components/MainCamList';
