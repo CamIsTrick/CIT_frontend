@@ -16,7 +16,7 @@ function App() {
   return (
     <>
       <Main/>
-      <div>TEST CICD</div>
+      <div>branch cicd test</div>
       <img src={myImage1} alt="My Image" />
       <img src={myImage2} alt="My Image" />
       {myImage3 && <img src={myImage3} alt="My Image" />}
