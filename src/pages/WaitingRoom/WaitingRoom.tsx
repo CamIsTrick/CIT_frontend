@@ -5,12 +5,26 @@ import RightLayout from "./components/RightLayout";
 import logo from '../../assets/logo.png'
 import btnImg1 from '../../assets/btnImg1.png'
 import btnImg2 from '../../assets/btnImg2.png'
+import Modal from "./components/Modal";
+import enterRoom from '../../assets/enterRoom.png'
+import { ModalContent } from "./components/ModalContent";
 
 const WaitingRoom = () => {
     const [inputValue, setInputValue] = useState('');
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+
 
     const handleInputChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setInputValue(event.target.value);
+    };
+
+    const openModal = () => {
+      setModalIsOpen(true);
+    };
+  
+    const closeModal = () => {
+      setModalIsOpen(false);
     };
 
     return (
@@ -19,6 +33,7 @@ const WaitingRoom = () => {
                 <S.ContainerHeader>
                     <img src={logo} alt="My Image" style={{width:'200px', height:'auto', marginLeft:'7px'}}/>
                 </S.ContainerHeader>
+
                 <S.ContainerWaitingRoomLayout>
                     {/* 왼쪽 레이아웃 */}
                     <S.ContainerWaitingRoomLayoutLeft>
@@ -34,7 +49,7 @@ const WaitingRoom = () => {
                             </S.WaitingRoomContainerTitleContainer>
                         </S.WaitingRoomContainerTitle>
                         <S.WaitingRoomContainerInput>
-                            <S.WaitingRoomCreateInput placeholder='Create Nickname' className="custom-input" value={inputValue} onChange={handleInputChange}  maxlength="16npm"/>
+                            <S.WaitingRoomCreateInput placeholder='Create Nickname' className="custom-input" value={inputValue} onChange={handleInputChange}  maxLength="16npm"/>
                         </S.WaitingRoomContainerInput>
                         <S.WaitingRoomContainerButtonContainer>
                             <div style={{display : 'flex', width : '100%', height: '100%', justifyContent:'space-between'}}>
@@ -42,7 +57,7 @@ const WaitingRoom = () => {
                                     <p>방 생성</p>
                                     <img src={btnImg1} alt="My Image" style={{width:'25%', height:'70%'}}/>
                                 </button>
-                                <button style={{display: 'flex', alignItems:'center', justifyContent:'space-evenly', background: 'white', width: '48%', height:'100%', borderRadius: '5px', border: 'none', boxShadow: '0px 0px 3px 0px rgba(0, 0, 0, 0.5)', fontSize:'17px', color:'grey'}}>
+                                <button onClick={openModal} style={{display: 'flex', alignItems:'center', justifyContent:'space-evenly', background: 'white', width: '48%', height:'100%', borderRadius: '5px', border: 'none', boxShadow: '0px 0px 3px 0px rgba(0, 0, 0, 0.5)', fontSize:'17px', color:'grey'}}>
                                     <p>방 참가</p>
                                     <img src={btnImg2} alt="My Image" style={{width:'25%', height:'70%'}}/>
                                 </button>
@@ -60,6 +75,11 @@ const WaitingRoom = () => {
                         <RightLayout inputValue={inputValue}/>
                     </S.ContainerWaitingRoomLayoutRight>
                 </S.ContainerWaitingRoomLayout>
+                {/* 모달 */}
+                <Modal isOpen={modalIsOpen} onClose={closeModal}>
+                    <ModalContent/>
+                </Modal>
+
             </S.Container>
         </>
     );
