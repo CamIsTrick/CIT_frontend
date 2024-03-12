@@ -31,7 +31,7 @@ const WaitingRoom = () => {
         <>
             <S.Container>
                 <S.ContainerHeader>
-                    <img src={logo} alt="My Image" style={{width:'200px', height:'auto', marginLeft:'7px'}}/>
+                    <img src={logo} alt="My Image" style={{ height:'auto', marginLeft:'7px'}}/>
                 </S.ContainerHeader>
 
                 <S.ContainerWaitingRoomLayout>
@@ -40,11 +40,11 @@ const WaitingRoom = () => {
                         <S.WaitingRoomContainerTitle>
                             <S.WaitingRoomContainerTitleContainer>
                                 <h1>재미있게, 재치있게,</h1>
-                                <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '8px', width: '90%', height: 'auto', overflow: 'hidden', flexWrap: 'wrap' }}>
-                                    <div style={{fontSize : '70px', color:'#419D78', fontWeight:'bolder'}}>Cam</div>
-                                    <div style={{fontSize : '70px', color:'#FFE66D', fontWeight:'bolder'}}>Is</div>
-                                    <div style={{fontSize : '70px', color:'#FF6B6B', fontWeight:'bolder'}}>Trick</div>
-                                </div>
+                                <span style={{ display: 'flex', alignItems: 'center', paddingBottom: '8px', width: '90%', height: 'auto', overflow: 'hidden', flexWrap: 'wrap' }}>
+                                    <div style={{ color:'#419D78', fontWeight:'bolder'}}>Cam</div>
+                                    <div style={{ color:'#FFE66D', fontWeight:'bolder'}}>Is</div>
+                                    <div style={{ color:'#FF6B6B', fontWeight:'bolder'}}>Trick</div>
+                                </span>
                                 <p style={{color:'grey'}}>이모지를 사용해서 활발하게 소통해봐요.<br/>저희가 도와드릴게요!</p>
                             </S.WaitingRoomContainerTitleContainer>
                         </S.WaitingRoomContainerTitle>
@@ -96,6 +96,21 @@ const S = {
         width : 100%;
         display : flex;
         align-items:center;
+        
+
+        img {
+            width:200px;
+            height:'auto'
+            marginLeft:'7px';
+        }
+
+        @media (max-width: 480px) {
+            position : relative;
+            top:3%;
+            img {
+                width: 130px;
+            }
+          }
     `,
     ContainerWaitingRoomLayout : styled.div`
         position : relative;
@@ -106,30 +121,63 @@ const S = {
         left : 50%;
         transform : translate(-50%, -50%);
         display : flex;
-        // justify-content : space-between;
+
+        @media (max-width: 480px) {
+            width: 95%;
+            height: 90%;
+            font-size: 1rem;
+            display:block;
+          }
     `,
     ContainerWaitingRoomLayoutLeft : styled.div`
         // background : blue;
         height: 100%;
         width : 50%;
+
+        @media (max-width: 480px) {
+            width: 100%;
+            height: 40%;
+            font-size: 1rem;
+          }
     `,
     WaitingRoomContainerTitle : styled.div`
         // background : green;
-        // height: 500px;
         width : 100%;
-        // align-items:center;
         margin-top : 40px;
+
+        @media (max-width: 480px) {
+            positon: absolute;
+            font-size: 1rem;
+            display:block;
+          }
     `,
     WaitingRoomContainerTitleContainer : styled.div`
-        // background: green;
-        // padding : 50px 0px 0px 100px;
+        // background: yellow;
+
+        span {
+            font-size:70px;
+        }
+
+        @media (max-width: 480px) {
+            font-size:0.8rem;
+            text-align: center;
+
+            span {
+                font-size: 3rem;
+                justify-content: center;
+                padding-left:10px;
+            }
+          }
     `,
     WaitingRoomContainerInput : styled.div`
         // background : red;
-        align-items: center;
         margin-top : 30px;
         height: 10%;
         width : 65%;
+
+        @media (max-width: 480px) {
+            padding-left:65px;
+          }
     `,
     WaitingRoomCreateInput: styled.input`
         height: 100%;
@@ -146,24 +194,41 @@ const S = {
     `,
     WaitingRoomContainerButtonContainer : styled.div`
         // background : red;
-        align-items: center;
         height: 10%;
         width : 65%;
         margin-top : 20px;
+
+        @media (max-width: 480px) {
+            font-size: 1rem;
+            display:block;
+            padding-left:65px;
+          }
     `,
     WaitingRoomContainerAbout : styled.div`
         // background : red;
         align-items: center;
         margin-top : 20px;
+
+        @media (max-width: 480px) {
+            // background-color:red;
+            position: absolute;
+            bottom: 1.5vh;
+            left: 50%;
+            transform: translateX(-50%);
+          }
     `,
     ContainerWaitingRoomLayoutRight : styled.div`
         // background : brown;
         height: 100%;
         width : 50%;
-
         display : flex;
-        // justify:content : center;
-        // align-ites: center;
+
+        @media (max-width: 480px) {
+            width: 100%;
+            height:40%;
+            font-size: 1rem;
+            display:block;
+          }
     `,
 };
 
