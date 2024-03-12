@@ -121,12 +121,10 @@ const S = {
         left : 50%;
         transform : translate(-50%, -50%);
         display : flex;
-        // justify-content : space-between;
 
         @media (max-width: 480px) {
             width: 95%;
             height: 90%;
-            justify-content: center;
             font-size: 1rem;
             display:block;
           }
@@ -139,8 +137,6 @@ const S = {
         @media (max-width: 480px) {
             width: 100%;
             height: 40%;
-            justify-content: center; 
-            align-items: center; 
             font-size: 1rem;
           }
     `,
@@ -151,24 +147,18 @@ const S = {
 
         @media (max-width: 480px) {
             positon: absolute;
-            justify-content: center;
-            space-between:center;
             font-size: 1rem;
             display:block;
-            align-items:center;
           }
     `,
     WaitingRoomContainerTitleContainer : styled.div`
         // background: yellow;
 
         span {
-            font-sixe:70px;
+            font-size:70px;
         }
 
         @media (max-width: 480px) {
-            justify-content: center;
-            space-between:center;
-            align-items:center;
             font-size:0.8rem;
             text-align: center;
 
@@ -181,7 +171,6 @@ const S = {
     `,
     WaitingRoomContainerInput : styled.div`
         // background : red;
-        align-items: center;
         margin-top : 30px;
         height: 10%;
         width : 65%;
@@ -205,14 +194,11 @@ const S = {
     `,
     WaitingRoomContainerButtonContainer : styled.div`
         // background : red;
-        align-items: center;
         height: 10%;
         width : 65%;
         margin-top : 20px;
 
         @media (max-width: 480px) {
-            justify-content: center;
-            align-items: center;
             font-size: 1rem;
             display:block;
             padding-left:65px;
@@ -224,29 +210,22 @@ const S = {
         margin-top : 20px;
 
         @media (max-width: 480px) {
+            // background-color:red;
             position: absolute;
-            bottom: 30px;
+            bottom: 1.5vh;
             left: 50%;
-            transform: translateX(-35%);
-            width: 100%;
-            text-align: center;
-            align-items: center;
+            transform: translateX(-50%);
           }
     `,
     ContainerWaitingRoomLayoutRight : styled.div`
         // background : brown;
         height: 100%;
         width : 50%;
-
         display : flex;
-        // justify:content : center;
-        // align-ites: center;
 
         @media (max-width: 480px) {
             width: 100%;
             height:40%;
-            justify-content: center;
-            align-items: center;
             font-size: 1rem;
             display:block;
           }
