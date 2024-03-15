@@ -1,10 +1,13 @@
 import * as React from "react";
 import styled from 'styled-components';
+import AnonButton from "./AnonButton";
 
 const MainSetting = () => {
+
     return (
         <S.MainSettingLayout>
             <S.MainSettingContainer>
+                <AnonButton/>
                 
             </S.MainSettingContainer>
         </S.MainSettingLayout>
