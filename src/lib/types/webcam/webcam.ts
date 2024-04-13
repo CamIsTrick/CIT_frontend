@@ -1,4 +1,5 @@
 export interface ParticipantProps {
+    sessionId: string;
     name: string;
     rtcPeer?: any;
     video?: React.RefObject<HTMLVideoElement>;

@@ -10,7 +10,6 @@
     "@types/react": "^18.2.58",
     "@types/react-dom": "^18.2.19",
     "@types/styled-components": "^5.1.34",
-    "@types/ws": "^8.5.10",
     "axios": "^1.6.7",
     "kurento-client": "^7.0.0",
     "kurento-utils": "^7.0.0",
