@@ -1,92 +1,19 @@
+//파일 나누기
 import * as React from "react";
 import { useState, useRef, useEffect } from "react";
 import * as kurentoUtils from 'kurento-utils';
+import Participant from '../../lib/types/Participant';
+import VideoElement from "./VideoElement";
 
 const PARTICIPANT_MAIN_CLASS = 'participant main';
 const PARTICIPANT_CLASS = 'participant';
 
-interface ParticipantProps {
-    name: string;
-    rtcPeer?: any;
-    video?: HTMLVideoElement;
-    ws: WebSocket | null;
-}
-
-class Participant {
-    name: string;
-    rtcPeer: any;
-    video: HTMLVideoElement;
-    ws: WebSocket | null;
-    sendMessage: (message: any) => void;
-
-    constructor(props: ParticipantProps, sendMessage: (message: any) => void) {
-        this.name = props.name;
-        this.rtcPeer = null;
-        this.video = props.video!;
-        this.ws = props.ws;
-        this.sendMessage = sendMessage;
-        this.onIceCandidate = this.onIceCandidate.bind(this);
-        this.video.autoplay = true;
-        this.video.controls = false;
-    }
-
-    createRtcPeer(options: any) {
-        kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, (error: any) => {
-            if (error) {
-                return console.error(error);
-            }
-            this.rtcPeer = kurentoUtils.WebRtcPeer;
-            this.rtcPeer.generateOffer(this.offerToReceiveVideo.bind(this));
-        });
-    }
-
-    offerToReceiveVideo = (error: any, offerSdp: any) => {
-        if (error) return console.error('sdp offer error');
-        console.log('Invoking SDP offer callback function');
-        var msg = {
-            id: 'receiveVideoFrom',
-            sender: this.name,
-            sdpOffer: offerSdp,
-        };
-        this.sendMessage(msg);
-    }
-
-    onIceCandidate(candidate: any, wp: any) {
-        console.log('Local candidate' + JSON.stringify(candidate));
-        var message = {
-        id: 'onIceCandidate',
-        candidate: candidate,
-        name: this.name,
-        };
-
-        this.sendMessage(message);
-    }
-
-    dispose() {
-        console.log('Disposing participant ' + this.name);
-        if (this.rtcPeer) {
-        this.rtcPeer.dispose(); 
-        }
-        const container = document.getElementById(this.name);
-        if(container){
-            container.parentNode?.removeChild(container);
-        }
-    }
-}
-
-const VideoElement: React.FC<ParticipantProps> = ({ name }) => {
-    return (
-        <video id={`video-${name}`} autoPlay controls></video>
-    );
-}
-
 interface ParticipantListProps {
     participants: { [name: string]: Participant };
+    isMainParticipant: boolean;
 }
 
-const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
-    const [isMainParticipant, setIsMainParticipant] = useState(false);
-    const [isRemoved, setIsRemoved] = useState(false);
+const ParticipantList: React.FC<ParticipantListProps> = React.memo(({ participants, isMainParticipant }) => {
 
     const switchContainerClass = (name: string) => {
         const container = document.getElementById(name);
@@ -100,35 +27,35 @@ const ParticipantList: React.FC<ParticipantListProps> = ({ participants }) => {
         container.className = PARTICIPANT_CLASS;
         }
     };
-
-    if (isRemoved) {
-        return null; 
-    }
+    
 
     return (
         <>
             {Object.entries(participants).map(([name, participant]) => (
                 <div key={name} id={name} className={isMainParticipant ? PARTICIPANT_MAIN_CLASS : PARTICIPANT_CLASS} onClick={() => switchContainerClass(name)}>
-                    <VideoElement name={name} ws={participant.ws} />
+                    <VideoElement name={name} ws={participant.ws} video={participant.video} sessionId={participant.sessionId}/>
                     <span>{name}</span>
                 </div>
             ))}
         </>
     );
-};
+});
 
 const Webcam: React.FC = () => {
     const nameRef = useRef<HTMLInputElement>(null);
     const roomIdRef = useRef<HTMLInputElement>(null);
     const leaveBtnRef = useRef<HTMLButtonElement>(null); // Leave 버튼에 대한 ref 추가
-    const ws = useRef<WebSocket | null>(null);
-    const rtcPeerRef = useRef<any>(null); 
+    const ws = useRef<WebSocket | null>(null); 
     const [participants, setParticipants] = useState<{ [name: string]: Participant }>({});
     const [userName, setUserName] = useState<string>("");
-    const [showJoinRoomInput,setShowJoinRoomInput] = useState(false);
+    const [isMainParticipant, setIsMainParticipant] = useState(false);
+
+    // participants와 isMainParticipant를 useMemo로 메모이제이션
+    const memoizedParticipants = React.useMemo(() => participants, [participants]);
+    const memoizedIsMainParticipant = React.useMemo(() => isMainParticipant, [isMainParticipant]);
 
     const sendMessage = (message: any) => {
-        var jsonMessage = JSON.stringify(message);
+        const jsonMessage = JSON.stringify(message);
         console.log('Sending message: ' + jsonMessage);
         if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.send(jsonMessage);
@@ -141,24 +68,52 @@ const Webcam: React.FC = () => {
         console.log('WebSocket connection opened.');
         }
         ws.current.onmessage = function (message: any) {
-        var parsedMessage = JSON.parse(message.data);
+        const parsedMessage = JSON.parse(message.data);
 
         console.info('Received message: ' + message.data);
 
         switch (parsedMessage.id) {
             case 'existingParticipants':
+                console.log(2)
                 onExistingParticipants(parsedMessage);
                 break;
             case 'newParticipantArrived':
+                console.log(3)
                 onNewParticipant(parsedMessage);
                 break;
             case 'receiveVideoAnswer':
+                console.log(4)
                 receiveVideoResponse(parsedMessage);
                 break;
+            case 'createRoomResponse': //백엔드에서 보낸 ROOMURL
+                console.log(1)
+                createRoomResponse(parsedMessage);
+                break;
             case 'iceCandidate':
-                participants[parsedMessage.name].rtcPeer.addIceCandidate(parsedMessage.candidate, function (error: any) {
+                console.log(0)
+                
+        //         participants[parsedMessage.name].rtcPeer.addIceCandidate(parsedMessage.candidate, function (error: any) {
+        //             if (error) {
+        //                 console.error("Error adding candidate: " + error);
+        //                 return;
+        //             }
+        //         });
+        //         break;
+        //     case 'participantExit':
+        //         onParticipantLeft(parsedMessage);
+        //         break;
+        //     default:
+        //         console.error('Unrecognized message', parsedMessage);
+        // }
+        // };
+
+                if (!participants[parsedMessage.name] || !participants[parsedMessage.name].rtcPeer) {
+                    console.error('Participant or RTC peer not found:', parsedMessage.name);
+                    return;
+                }
+                participants[parsedMessage.name].rtcPeer.addIceCandidate(parsedMessage.candidate, (error) => {
                     if (error) {
-                        console.error("Error adding candidate: " + error);
+                        console.error('Error adding candidate:', error);
                         return;
                     }
                 });
@@ -190,32 +145,44 @@ const Webcam: React.FC = () => {
             },
         };
         console.log(nameRef.current?.value + ' registered in room ' + roomIdRef.current?.value);
+        const sessionId : string = localStorage.getItem('sessionId')
         const newParticipants = { ...participants };
-        const participant = new Participant({ name: nameRef.current?.value || '', ws: ws.current }, sendMessage);
+        const participant = new Participant({ name: nameRef.current?.value || '', ws: ws.current, sessionId }, sendMessage);
         newParticipants[nameRef.current?.value || ''] = participant;
         setParticipants(newParticipants);
         const video = participant.video;
 
-        var options = {
+        const options = {
             localVideo: video,
             mediaConstraints: constraints,
-            onicecandidate: (candidate: any) => participant.onIceCandidate(candidate, participant),
+            onicecandidate: participant.onIceCandidate.bind(participant), //수정한 코드
+            //onicecandidate: (candidate: any) => participant.onIceCandidate(candidate, participant, sessionId),
         };
 
-        participant.createRtcPeer!(options);
+        participant.rtcPeer = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, (error: any) => { //participant.createRtcPeer!(options) 함수의 코드와 동일
+            if (error) {
+                return console.error(error);
+            }
+            participant.rtcPeer.generateOffer(participant.offerToReceiveVideo.bind(participant));
+        });
+        // participant.createRtcPeer!(options);
 
         msg.data.forEach(receiveVideo);
     };
 
     const onNewParticipant = (request: any) => {
+        console.log("onNewParticipant", request.name)
         receiveVideo(request.name);
     };
 
     const receiveVideoResponse = (result: any) => {
         const newParticipants = { ...participants };
+        console.log(newParticipants, "receiveVideoResponse")
+        console.log("최종 테스트", newParticipants[result.name].rtcPeer)
         newParticipants[result.name].rtcPeer.processAnswer(result.sdpAnswer, (error: any) => {
             if (error) return console.error(error);
         });
+        
         setParticipants(newParticipants);
     };
 
@@ -228,23 +195,62 @@ const Webcam: React.FC = () => {
         setParticipants(newParticipants);
     };
 
+    const createRoomResponse = (response: any) => { //백엔드에서 응답받은 createroom 메시지
+        const {roomId,entryCode,roomURL,sessionId} = response;
+        console.log('Received createRoomResponse:', response);
+        localStorage.setItem('sessionId', sessionId)
+        /*const message = {
+            id: 'createRoomResponse',
+            roomId: roomId,
+            entryCode: entryCode,
+            roomURL: roomURL,
+            sessionId:sessionId,
+        };
+        sendMessage(message);*/
+    }
+
     const joinRoom = () => {
         if(!nameRef.current?.value) return;
-        
-        setShowJoinRoomInput(true);
+
         if (!nameRef.current?.value || !roomIdRef.current?.value) return;
+        setUserName(nameRef.current.value);
+        const sessionId : string = localStorage.getItem('sessionId')
+
+        const newParticipant = new Participant({ name: nameRef.current.value, ws: ws.current, sessionId }, sendMessage);
+
+        // 기존 참가자 목록 복사 후 새로운 참가자 추가
+        const updatedParticipants = { ...participants };
+        updatedParticipants[nameRef.current.value] = newParticipant;
+    
+        // 상태 업데이트
+        setParticipants(updatedParticipants);
+        
         const message = {
             id: 'joinRoom',
             name: nameRef.current.value,
             roomId: roomIdRef.current.value,
         };
         sendMessage(message);
+        setIsMainParticipant(false);
 
         document.getElementById('container')?.style.setProperty('visibility', 'hidden');
         leaveBtnRef.current?.style.setProperty('visibility', 'visible'); // Leave 버튼에 대한 스타일 조작
     };
+
     const createRoom = () => {
         if (!nameRef.current?.value) return;
+        setUserName(nameRef.current.value);
+        const sessionId : string = localStorage.getItem('sessionId')
+        const newParticipant = new Participant({ name: nameRef.current.value, ws: ws.current,sessionId }, sendMessage);
+
+        // 기존 참가자 목록 복사 후 새로운 참가자 추가
+        const updatedParticipants = { ...participants };
+        updatedParticipants[nameRef.current.value] = newParticipant;
+    
+        // 상태 업데이트
+        setParticipants(updatedParticipants);
+        setIsMainParticipant(true);
+
         const message = {
             id:'createRoom',
             name: nameRef.current.value,
@@ -265,13 +271,26 @@ const Webcam: React.FC = () => {
 
     const receiveVideo = (sender: any) => {
         const newParticipants = { ...participants };
-        const participant = new Participant({ name: sender, ws: ws.current }, sendMessage);
+        const sessionId : string = localStorage.getItem('sessionId')
+        console.log("session id 입니다.",sessionId)
+        const participant = new Participant({ name: sender, ws: ws.current,sessionId }, sendMessage);
+        
+        console.log("participant 입니다.",participant)
         const options = {
             remoteVideo: participant.video,
-            onicecandidate: (candidate: any) => participant.onIceCandidate(candidate, participant),
+            onicecandidate:participant.onIceCandidate.bind(participant), //수정한 코드
+            //onicecandidate: (candidate: any) => participant.onIceCandidate(candidate, participant, sessionId),
         };
 
-        participant.createRtcPeer!(options);
+        participant.rtcPeer = kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, (error: any) => { //participant.createRtcPeer 함수의 코드와 동일
+            if (error) {
+                return console.error(error);
+            }
+            console.log("receiveVideo participan:",participant);
+            participant.rtcPeer.generateOffer(participant.offerToReceiveVideo.bind(participant));
+        });
+        
+        // participant.createRtcPeer!(options);
         newParticipants[sender] = participant;
         setParticipants(newParticipants);
     };
@@ -288,7 +307,7 @@ const Webcam: React.FC = () => {
             <button ref={leaveBtnRef} id="leaveBtn" onClick={leaveRoom} style={{ visibility: 'hidden' }}>🙌Leave🙌</button> {/* Leave 버튼에 대한 ref 추가 */}
             
             <div id='participants'>
-                {userName && <ParticipantList participants={participants} />}
+                {userName !== '' && <ParticipantList participants={memoizedParticipants} isMainParticipant={memoizedIsMainParticipant}/>}
             </div>
         </>
     );
