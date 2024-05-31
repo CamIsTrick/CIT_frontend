@@ -1,31 +1,24 @@
 import * as React from "react";
-import styled from 'styled-components';
+// import Chatting from "src/components/chatting/Chatting";
+import Chatting from "../../../components/chatting/Chatting";
+import styled from "styled-components";
 
 const MainChatting = () => {
-    return (
-        <S.MainChattingLayout>
-            <S.MainChattingContainer/>
-        </S.MainChattingLayout>
-    );
+  return (
+    <S.MainChattingLayout>
+      <S.Chatting />
+    </S.MainChattingLayout>
+  );
 };
 
 const S = {
-    MainChattingLayout: styled.div`
-        background-color: purple;
-        color: #fff;
-        height: 75%;
-        width : 100%;
-    `,
-    MainChattingContainer: styled.div`
-        background-color: white;
-        color: #fff;
-        width: 90%;
-        height: 90%;
-        position: relative;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    `,
+  MainChattingLayout: styled.div`
+    background-color: purple;
+    color: #fff;
+    height: 75%;
+    width: 100%;
+  `,
+  Chatting: styled(Chatting)``,
 };
 
 export default MainChatting;
