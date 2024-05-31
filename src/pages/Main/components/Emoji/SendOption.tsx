@@ -33,7 +33,7 @@ export default function SendOption({
 const S = {
   StyledButton: styled.button<{ disabled: boolean }>`
     padding: 8px 16px;
-    background-color: ${(props) => (props.disabled ? "#ccc" : "#4caf50")};
+    background-color: ${(props) => (props.disabled ? "#ccc" : "#69a085")};
     color: white;
     border: none;
     border-radius: 15px;
@@ -42,7 +42,7 @@ const S = {
     transition: background-color 0.3s;
 
     &:hover {
-      background-color: ${(props) => (props.disabled ? "#ccc" : "#45a049")};
+      background-color: ${(props) => (props.disabled ? "#ccc" : "#507C67")};
     }
   `,
 };
